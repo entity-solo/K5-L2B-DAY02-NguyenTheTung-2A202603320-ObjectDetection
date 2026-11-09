@@ -20,7 +20,7 @@ Tóm tắt ba ca mơ hồ đã quyết định:
 
 ## 3. Annotation và self-QC
 
-- Số file nhãn train: 50 file (`drive_001.txt` đến `drive_050.txt`), tổng cộng 850 bounding boxes.
+- Số file nhãn train: 50 file (`drive_001.txt` đến `drive_050.txt`), tổng cộng 889 bounding boxes (đã rà soát và bổ sung đầy đủ 4 lớp: car, truck, bus, van).
 - Kết quả checker và lỗi đã xử lý: Chạy `python tools/check_yolo_labels.py` trả về `ĐẠT cấu trúc: 50/50 file nhãn hợp lệ`. Đảm bảo đủ 50 file, đúng định dạng 5 cột chuẩn hóa trong khoảng `[0, 1]`, không có box vượt biên.
 - Danh sách ít nhất 10 ảnh đã rà bằng mắt: `drive_003.jpg`, `drive_005.jpg`, `drive_008.jpg`, `drive_015.jpg`, `drive_020.jpg`, `drive_025.jpg`, `drive_030.jpg`, `drive_035.jpg`, `drive_042.jpg`, `drive_048.jpg`.
 - Lỗi bỏ sót/box/class phát hiện khi rà và cách sửa: Nắn chỉnh các box lỏng ôm sát mép thân xe nhìn thấy; bổ sung box cho xe ở xa và xe bị che khuất một phần trong dòng phương tiện ùn tắc; tách các box bị gộp hai xe dính liền thành từng box độc lập.
@@ -51,10 +51,10 @@ Dẫn tới `outputs/annotation_evaluation.json` trong repo.
 
 | Chỉ số trên 10 ảnh eval | Giá trị |
 |---|---:|
-| Precision | [Điền từ model_eval_metrics.json] |
-| Recall | [Điền từ model_eval_metrics.json] |
-| mAP50 | [Điền từ model_eval_metrics.json] |
-| mAP50–95 | [Điền từ model_eval_metrics.json] |
+| Precision | 0.3553 (35.53%) |
+| Recall | 0.2738 (27.38%) |
+| mAP50 | 0.2815 (28.15%) |
+| mAP50–95 | 0.2058 (20.58%) |
 
 Thư mục hình ảnh đánh giá:
 - [Visual predictions trên 10 ảnh eval](assets/eval_predictions/visuals/)
