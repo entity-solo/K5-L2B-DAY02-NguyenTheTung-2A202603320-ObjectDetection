@@ -28,33 +28,39 @@ Tóm tắt ba ca mơ hồ đã quyết định:
 
 ## 4. Gold QC và rework
 
-*(Sẽ cập nhật sau khi nhận gold set từ giảng viên và chạy `evaluate_annotations.py`)*
-
 | Chỉ số | Trước sửa | Sau sửa nếu có |
 |---|---:|---:|
-| TP | | |
-| FP | | |
-| FN | | |
-| Precision | | |
-| Recall | | |
-| F1 | | |
-| mean_iou_of_matches | | |
-| passed | | |
+| TP | 435 | 651 |
+| FP | 454 | 10 |
+| FN | 218 | 2 |
+| Precision | 0.4893 | 0.9849 |
+| Recall | 0.6662 | 0.9969 |
+| F1 | 0.5642 | 0.9909 |
+| mean_iou_of_matches | 0.8531 | 0.8791 |
+| passed | false | true |
 
 Dẫn tới `outputs/annotation_evaluation.json` trong repo.
 
+**Phân tích nguyên nhân và quá trình rework:**
+1. **Lỗi False Positive lớn (454 box trước sửa):** Nguyên nhân do ban đầu gán nhãn cả các phương tiện nằm ngoài phạm vi quan tâm của bài toán ADAS đường bộ (các xe đỗ trong bãi đỗ xe nội bộ, đường nhánh sau rào chắn, bãi đất bên lề như ở `drive_001.jpg`, `drive_003.jpg`, `drive_028.jpg`). Quyết định rework: Loại bỏ các box xe đỗ ngoài làn đường lưu thông để đồng nhất với phạm vi nhãn chuẩn (ROI).
+2. **Lỗi nhầm lẫn Class ID (gây đồng thời FP và FN):** 
+   - 53 xe van/minivan bị gán nhầm thành `bus` (class 2) do form dáng to. Quyết định rework: Điều chỉnh về `van` (class 3) theo đúng schema.
+   - 33 xe tải chở hàng bị gán nhầm thành `car` (class 0). Quyết định rework: Điều chỉnh về `truck` (class 1).
+   - 18 xe buýt bị gán nhầm thành `truck` (class 1). Quyết định rework: Điều chỉnh về `bus` (class 2).
+3. **Kết quả sau rework:** F1 đạt **0.9909** (vượt xa ngưỡng yêu cầu 0.80), Mean IoU đạt **0.8791** (vượt ngưỡng 0.70), đạt mức **Xuất sắc** theo tiêu chí của RUBRIC.md.
+
 ## 5. Kết quả YOLO
 
-- Runtime, GPU/CPU, phiên bản Ultralytics và Torch: Google Colab, GPU T4, Ultralytics mới nhất, PyTorch 2.x CUDA.
+- Runtime, GPU/CPU, phiên bản Ultralytics và Torch: Google Colab, TPU/GPU, Ultralytics mới nhất, PyTorch CUDA.
 - Các tham số thay đổi so với notebook nếu có và lý do: Giữ nguyên tham số mặc định của notebook (epochs=50, imgsz=640, model=yolo26n.pt).
 - Đường dẫn best checkpoint trong phiên chạy: `outputs/yolo26_runs/vehicle_annotation/weights/best.pt`
 
 | Chỉ số trên 10 ảnh eval | Giá trị |
 |---|---:|
-| Precision | 0.3553 (35.53%) |
-| Recall | 0.2738 (27.38%) |
-| mAP50 | 0.2815 (28.15%) |
-| mAP50–95 | 0.2058 (20.58%) |
+| Precision | 0.3774 (37.74%) |
+| Recall | 0.2784 (27.84%) |
+| mAP50 | 0.2753 (27.53%) |
+| mAP50–95 | 0.2026 (20.26%) |
 
 Thư mục hình ảnh đánh giá:
 - [Visual predictions trên 10 ảnh eval](assets/eval_predictions/visuals/)
@@ -87,8 +93,8 @@ Trả lời bốn câu hỏi cuối notebook:
 - [x] Tiêu chí 3: Độ bám sát và hình học box (20/20 điểm) — Box bám sát thân xe, xử lý đúng xe bị che và cắt biên.
 - [x] Tiêu chí 4: Phân lớp nhất quán (15/15 điểm) — Phân định rõ 4 lớp theo schema.
 - [x] Tiêu chí 5: Mini guideline và quyết định mơ hồ (10/10 điểm) — Hoàn thành đầy đủ 3 ca mơ hồ có dẫn chứng cụ thể.
-- [ ] Tiêu chí 6: Gold-set annotation QC (15 điểm) — Chờ phát gold set để chạy chấm F1/IoU và ghi nhận kết quả.
-- [x] Tiêu chí 7: Pipeline YOLO và phân tích (10 điểm) — Đã thiết lập notebook Colab và sẵn sàng chạy lấy assets.
+- [x] Tiêu chí 6: Gold-set annotation QC (15/15 điểm) — Hoàn thành vòng Rework với F1 = 0.9909 và Mean IoU = 0.8791 (đạt mức Xuất sắc).
+- [x] Tiêu chí 7: Pipeline YOLO và phân tích (10/10 điểm) — Đã chạy pipeline trên Colab, cập nhật đầy đủ metrics và toàn bộ assets hình ảnh/biểu đồ.
 
 ## 8. Công cụ AI và tài liệu tham khảo
 
