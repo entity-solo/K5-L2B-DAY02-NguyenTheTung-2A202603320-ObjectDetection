@@ -11,6 +11,7 @@ outputs/
 # Không commit checkpoint .pt, kể cả khi nằm trong report/individual/assets.
 *.pt
 __pycache__/
+tools/run_yolo_cvat_flow.py
 
 # macOS
 .DS_Store
