@@ -69,13 +69,13 @@ Thư mục hình ảnh đánh giá:
 Trả lời bốn câu hỏi cuối notebook:
 
 1. **Lớp nào recall thấp nhất? Ảnh nào minh họa?**
-   - Trả lời: Lớp `van` (hoặc `truck`/`bus`) có recall thấp nhất do mất cân bằng dữ liệu nghiêm trọng (class imbalance); trong tập train 50 ảnh có tới hơn 80% là `car`, số lượng mẫu cho `van`, `truck` rất ít khiến mô hình khó học đặc trưng của các lớp thiểu số. Ảnh minh họa: trên ảnh `drive_055.jpg` (hoặc ảnh eval có xe van/minibus), mô hình bỏ sót hoặc nhận diện nhầm xe van thành car.
+   - Trả lời: Mô hình có recall thấp nhất ở lớp xe buýt (`bus`). Minh họa cụ thể ở ảnh `drive_058.jpg` trong tập eval: mô hình bị phân mảnh dự đoán, vẽ nhiều bounding box cho cùng một chiếc xe buýt (thay vì một box ôm trọn thân xe).
 2. **Nếu mAP50 cao nhưng mAP50–95 thấp, cần kiểm điều gì trên box?**
-   - Trả lời: Khi mAP50 cao nhưng mAP50-95 thấp, mô hình đã định vị đúng vùng bao chứa vật thể (đạt ngưỡng IoU 0.50), nhưng biên của bounding box chưa đủ khít (bị lỏng hoặc lệch mép xe). Cần kiểm tra độ bám sát (tightness) của box trong nhãn huấn luyện, tránh để khoảng thừa mặt đường/nền trời hoặc lấn sang vật thể khác.
+   - Trả lời: Mô hình gặp khó khăn trong việc nhận diện chính xác biên của vật thể (đã phát hiện đúng vị trí tổng thể ở ngưỡng IoU 0.50 nhưng biên box dự đoán bị lệch hoặc chưa ôm khít khi nâng ngưỡng IoU lên cao). Về phía dữ liệu nhãn, cần kiểm tra lại độ bám sát (tightness) của bounding box trong tập huấn luyện để tránh các box bị lỏng, thừa mặt đường hoặc nền trời.
 3. **Lỗi class nào có thể liên quan guideline? Dữ kiện nào hỗ trợ nhận xét?**
-   - Trả lời: Sự nhầm lẫn giữa `car` (SUV/xe bán tải/minivan nhỏ) với `van` và `truck`. Dữ kiện hỗ trợ: trên Confusion Matrix (`confusion_matrix.png`), có các ca dự đoán nhầm giữa cặp `car` - `van` và `car` - `truck`, phản ánh ranh giới phân loại các dòng xe MPV/pickup lai giữa chở người và chở hàng trong thực tế.
+   - Trả lời: Lỗi nhầm lẫn chủ yếu bắt nguồn từ hình dáng xe ngoài thực tế gây mơ hồ cao. Trong bối cảnh giao thông thực tế, có nhiều trường hợp hình dáng xe van nhìn khá giống xe tải (`truck`) và xe bán tải (`pickup truck` thuộc nhóm `car`), đặc biệt khi nhìn từ góc camera CCTV trên cao xuống các dòng xe tải thùng kín cỡ nhỏ hoặc minivan giao hàng. Dữ kiện hỗ trợ: trên ma trận nhầm lẫn (`confusion_matrix.png`) và lúc đối chiếu nhãn, các trường hợp lai giữa khoang chở hàng kín và thùng tải lửng gây khó khăn cho việc phân loại nhất quán nếu guideline không quy ước chi tiết từng form dáng đặc thù.
 4. **Vì sao không dùng 10 ảnh eval để train? Vai trò validation của chúng trong notebook là gì?**
-   - Trả lời: Không dùng 10 ảnh eval để train nhằm tránh hiện tượng Data Leakage (rò rỉ dữ liệu) và đánh giá khách quan khả năng tổng quát hóa (generalization) của mô hình trên dữ liệu chưa từng thấy trong quá trình tối ưu gradient. Trong notebook, 10 ảnh này đóng vai trò validation set dùng để theo dõi loss/mAP qua từng epoch và làm căn cứ lựa chọn checkpoint tốt nhất (`best.pt`).
+   - Trả lời: Không dùng 10 ảnh eval để train vì sẽ khiến mô hình bị học thuộc dữ liệu (overfitting / rò rỉ dữ liệu), nhất là khi tập eval có số lượng khá lớn so với tập train (10 ảnh eval so với 50 ảnh train, chiếm gần 17% tổng tập dữ liệu). Nếu đem train sẽ làm mất khả năng đánh giá khách quan về độ tổng quát hóa của detector. Trong notebook, 10 ảnh này đóng vai trò tập Validation độc lập để đo lường mAP sau mỗi epoch và làm tiêu chí chọn ra trọng số tốt nhất (`best.pt`).
 
 ## 6. Khó khăn và cách xử lý
 
